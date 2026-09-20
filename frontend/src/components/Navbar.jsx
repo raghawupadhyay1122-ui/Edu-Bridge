@@ -12,11 +12,15 @@ export default function Navbar() {
 
   return (
     <nav className="navbar">
-      <div className="navbar-brand">📚 Doubt Portal</div>
+      <div className="navbar-brand-wrap">
+        <div className="brand-mark">📚</div>
+        <div className="navbar-brand">Doubt Portal</div>
+      </div>
       {user && (
         <div className="navbar-user">
           <span>
-            {user.name} <span className="badge">{user.role}</span>
+            <strong>{user.name}</strong>
+            <span className="badge">{user.role}</span>
           </span>
           <button className="btn-secondary" onClick={handleLogout}>
             Logout

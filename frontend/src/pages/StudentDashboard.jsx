@@ -24,7 +24,6 @@ export default function StudentDashboard() {
 
   useEffect(() => {
     fetchDoubts();
-    // Poll every 10s so students see faculty replies without manual refresh
     const interval = setInterval(fetchDoubts, 10000);
     return () => clearInterval(interval);
   }, []);
@@ -44,12 +43,19 @@ export default function StudentDashboard() {
     }
   };
 
+  const totalDoubts = doubts.length;
+  const resolvedDoubts = doubts.filter((d) => d.status === 'resolved').length;
+  const openDoubts = doubts.filter((d) => d.status === 'open').length;
+
   return (
     <div>
       <Navbar />
       <div className="dashboard">
         <div className="dashboard-col ask-col">
-          <h2>Ask a Doubt</h2>
+          <div className="panel-intro">
+            <span className="eyebrow">Student workspace</span>
+            <h2>Ask a Doubt</h2>
+          </div>
           <form className="ask-form" onSubmit={handleSubmit}>
             <label>Subject</label>
             <input
@@ -81,9 +87,31 @@ export default function StudentDashboard() {
         </div>
 
         <div className="dashboard-col list-col">
-          <h2>Your Doubts</h2>
-          {loading && <p>Loading...</p>}
-          {!loading && doubts.length === 0 && <p>You haven't asked anything yet.</p>}
+          <div className="panel-intro row-between">
+            <div>
+              <span className="eyebrow">Overview</span>
+              <h2>Your Doubts</h2>
+            </div>
+            <div className="summary-grid compact">
+              <div className="stat-card">
+                <span>Total</span>
+                <strong>{totalDoubts}</strong>
+              </div>
+              <div className="stat-card">
+                <span>Open</span>
+                <strong>{openDoubts}</strong>
+              </div>
+              <div className="stat-card">
+                <span>Resolved</span>
+                <strong>{resolvedDoubts}</strong>
+              </div>
+            </div>
+          </div>
+
+          {loading && <p className="empty-state">Loading your doubts...</p>}
+          {!loading && doubts.length === 0 && (
+            <p className="empty-state">You haven't asked anything yet. Start by submitting your first doubt.</p>
+          )}
           {doubts.map((d) => (
             <DoubtThread key={d._id} doubt={d} />
           ))}

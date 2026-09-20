@@ -45,32 +45,56 @@ export default function FacultyDashboard() {
   };
 
   const visibleDoubts = doubts.filter((d) => filter === 'all' || d.status === filter);
+  const totalDoubts = doubts.length;
+  const openDoubts = doubts.filter((d) => d.status === 'open').length;
+  const resolvedDoubts = doubts.filter((d) => d.status === 'resolved').length;
 
   return (
     <div>
       <Navbar />
       <div className="dashboard single-col">
         <div className="dashboard-header-row">
-          <h2>Student Doubts</h2>
-          <div className="filter-toggle">
-            {['all', 'open', 'resolved'].map((f) => (
-              <button
-                key={f}
-                className={filter === f ? 'active' : ''}
-                onClick={() => setFilter(f)}
-              >
-                {f}
-              </button>
-            ))}
+          <div>
+            <span className="eyebrow">Faculty panel</span>
+            <h2>Student Doubts</h2>
+          </div>
+
+          <div className="summary-grid wide">
+            <div className="stat-card">
+              <span>Total</span>
+              <strong>{totalDoubts}</strong>
+            </div>
+            <div className="stat-card">
+              <span>Open</span>
+              <strong>{openDoubts}</strong>
+            </div>
+            <div className="stat-card">
+              <span>Resolved</span>
+              <strong>{resolvedDoubts}</strong>
+            </div>
           </div>
         </div>
 
+        <div className="filter-toggle robust">
+          {['all', 'open', 'resolved'].map((f) => (
+            <button
+              key={f}
+              className={filter === f ? 'active' : ''}
+              onClick={() => setFilter(f)}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+
         {error && <p className="error-text">{error}</p>}
-        {loading && <p>Loading...</p>}
-        {!loading && visibleDoubts.length === 0 && <p>No doubts here.</p>}
+        {loading && <p className="empty-state">Loading doubts...</p>}
+        {!loading && visibleDoubts.length === 0 && (
+          <p className="empty-state">No doubts match this filter right now.</p>
+        )}
 
         {visibleDoubts.map((d) => (
-          <div key={d._id}>
+          <div key={d._id} className="reply-thread-wrapper">
             <DoubtThread doubt={d} />
             <div className="reply-box">
               <textarea
