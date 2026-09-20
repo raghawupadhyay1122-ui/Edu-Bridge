@@ -22,10 +22,7 @@ const ensureDemoAccounts = async () => {
   for (const account of demoAccounts) {
     const existing = await User.findOne({ username: account.username.toLowerCase() });
     if (!existing) {
-      await User.create({
-        ...account,
-        email: `${account.username}@demo.local`,
-      });
+      await User.create(account);
     }
   }
 };

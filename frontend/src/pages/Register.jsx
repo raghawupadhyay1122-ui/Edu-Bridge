@@ -7,7 +7,6 @@ export default function Register() {
   const [form, setForm] = useState({
     name: '',
     username: '',
-    email: '',
     password: '',
     subject: '',
     rollNumber: '',
@@ -52,14 +51,6 @@ export default function Register() {
 
         <label>Username</label>
         <input value={form.username} onChange={update('username')} required placeholder="your_username" />
-
-        <label>Email (optional)</label>
-        <input
-          type="email"
-          value={form.email}
-          onChange={update('email')}
-          placeholder="you@example.com"
-        />
 
         <label>Password</label>
         <input

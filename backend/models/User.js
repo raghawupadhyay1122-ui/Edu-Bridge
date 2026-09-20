@@ -5,7 +5,6 @@ const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
     username: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    email: { type: String, unique: true, sparse: true, lowercase: true, trim: true },
     password: { type: String, required: true },
     role: { type: String, enum: ['student', 'faculty'], required: true },
     // Optional extra fields
@@ -31,7 +30,6 @@ userSchema.methods.toSafeObject = function () {
     id: this._id,
     name: this.name,
     username: this.username,
-    email: this.email,
     role: this.role,
     subject: this.subject,
     rollNumber: this.rollNumber,

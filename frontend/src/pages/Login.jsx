@@ -45,7 +45,7 @@ export default function Login() {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
-          placeholder="student or faculty"
+          placeholder="Enter username"
         />
 
         <label>Password</label>

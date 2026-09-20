@@ -16,7 +16,7 @@ const signToken = (user) =>
 // @desc   Register as student or faculty
 router.post('/register', async (req, res) => {
   try {
-    const { name, username, email, password, role, subject, rollNumber } = req.body;
+    const { name, username, password, role, subject, rollNumber } = req.body;
 
     if (!name || !username || !password || !role) {
       return res.status(400).json({ message: 'name, username, password and role are required' });
@@ -31,16 +31,9 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'Username already taken' });
     }
 
-    const normalizedEmail = email ? email.trim().toLowerCase() : `${normalizedUsername}@demo.local`;
-    const existingEmail = normalizedEmail ? await User.findOne({ email: normalizedEmail }) : null;
-    if (existingEmail) {
-      return res.status(400).json({ message: 'Email already registered' });
-    }
-
     const user = await User.create({
       name,
       username: normalizedUsername,
-      email: normalizedEmail,
       password,
       role,
       subject,
@@ -59,15 +52,15 @@ router.post('/register', async (req, res) => {
 // @desc   Login as student or faculty
 router.post('/login', async (req, res) => {
   try {
-    const { username, email, password, role } = req.body;
+    const { username, password, role } = req.body;
 
-    const loginIdentifier = (username || email || '').trim().toLowerCase();
+    const loginIdentifier = (username || '').trim().toLowerCase();
     if (!loginIdentifier || !password || !role) {
-      return res.status(400).json({ message: 'username/email, password and role are required' });
+      return res.status(400).json({ message: 'username, password and role are required' });
     }
 
     const user = await User.findOne({
-      $or: [{ username: loginIdentifier }, { email: loginIdentifier }],
+      username: loginIdentifier,
     });
 
     if (!user) {
