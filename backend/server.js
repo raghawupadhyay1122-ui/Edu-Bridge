@@ -8,10 +8,25 @@ const authRoutes = require('./routes/auth');
 const doubtRoutes = require('./routes/doubts');
 
 const app = express();
-const allowedOrigins = (CLIENT_ORIGIN || 'http://localhost:5173')
-  .split(',')
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+const allowedOrigins = new Set(
+  (CLIENT_ORIGIN || 'http://localhost:5173')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean)
+);
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+
+  const normalized = origin.toLowerCase();
+
+  if (allowedOrigins.has(origin)) return true;
+  if (normalized.includes('localhost')) return true;
+  if (normalized.endsWith('.vercel.app')) return true;
+  if (normalized.includes('.onrender.com')) return true;
+
+  return false;
+};
 
 const ensureDemoAccounts = async () => {
   const demoAccounts = [
@@ -32,7 +47,7 @@ connectDB().then(ensureDemoAccounts).catch((err) => console.error(err));
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (isAllowedOrigin(origin)) {
         callback(null, true);
         return;
       }
