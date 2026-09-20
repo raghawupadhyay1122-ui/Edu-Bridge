@@ -16,21 +16,36 @@ const signToken = (user) =>
 // @desc   Register as student or faculty
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role, subject, rollNumber } = req.body;
+    const { name, username, email, password, role, subject, rollNumber } = req.body;
 
-    if (!name || !email || !password || !role) {
-      return res.status(400).json({ message: 'name, email, password and role are required' });
+    if (!name || !username || !password || !role) {
+      return res.status(400).json({ message: 'name, username, password and role are required' });
     }
     if (!['student', 'faculty'].includes(role)) {
       return res.status(400).json({ message: 'role must be student or faculty' });
     }
 
-    const existing = await User.findOne({ email: email.toLowerCase() });
-    if (existing) {
+    const normalizedUsername = username.trim().toLowerCase();
+    const existingUsername = await User.findOne({ username: normalizedUsername });
+    if (existingUsername) {
+      return res.status(400).json({ message: 'Username already taken' });
+    }
+
+    const normalizedEmail = email ? email.trim().toLowerCase() : `${normalizedUsername}@demo.local`;
+    const existingEmail = normalizedEmail ? await User.findOne({ email: normalizedEmail }) : null;
+    if (existingEmail) {
       return res.status(400).json({ message: 'Email already registered' });
     }
 
-    const user = await User.create({ name, email, password, role, subject, rollNumber });
+    const user = await User.create({
+      name,
+      username: normalizedUsername,
+      email: normalizedEmail,
+      password,
+      role,
+      subject,
+      rollNumber,
+    });
     const token = signToken(user);
 
     res.status(201).json({ token, user: user.toSafeObject() });
@@ -44,13 +59,17 @@ router.post('/register', async (req, res) => {
 // @desc   Login as student or faculty
 router.post('/login', async (req, res) => {
   try {
-    const { email, password, role } = req.body;
+    const { username, email, password, role } = req.body;
 
-    if (!email || !password || !role) {
-      return res.status(400).json({ message: 'email, password and role are required' });
+    const loginIdentifier = (username || email || '').trim().toLowerCase();
+    if (!loginIdentifier || !password || !role) {
+      return res.status(400).json({ message: 'username/email, password and role are required' });
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const user = await User.findOne({
+      $or: [{ username: loginIdentifier }, { email: loginIdentifier }],
+    });
+
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }

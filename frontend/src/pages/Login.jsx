@@ -4,14 +4,14 @@ import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
   const [role, setRole] = useState('student');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('student');
+  const [password, setPassword] = useState('student123');
   const { login, loading, error } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const ok = await login({ email, password, role });
+    const ok = await login({ username, password, role });
     if (ok) {
       navigate(role === 'student' ? '/student' : '/faculty');
     }
@@ -39,13 +39,13 @@ export default function Login() {
           </button>
         </div>
 
-        <label>Email</label>
+        <label>Username</label>
         <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           required
-          placeholder="you@example.com"
+          placeholder="student or faculty"
         />
 
         <label>Password</label>
@@ -56,6 +56,10 @@ export default function Login() {
           required
           placeholder="••••••••"
         />
+
+        <p className="demo-text">
+          Demo accounts: student / student123 and faculty / faculty123
+        </p>
 
         {error && <p className="error-text">{error}</p>}
 

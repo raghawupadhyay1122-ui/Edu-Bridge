@@ -6,6 +6,7 @@ export default function Register() {
   const [role, setRole] = useState('student');
   const [form, setForm] = useState({
     name: '',
+    username: '',
     email: '',
     password: '',
     subject: '',
@@ -49,12 +50,14 @@ export default function Register() {
         <label>Full Name</label>
         <input value={form.name} onChange={update('name')} required placeholder="Jane Doe" />
 
-        <label>Email</label>
+        <label>Username</label>
+        <input value={form.username} onChange={update('username')} required placeholder="your_username" />
+
+        <label>Email (optional)</label>
         <input
           type="email"
           value={form.email}
           onChange={update('email')}
-          required
           placeholder="you@example.com"
         />
 

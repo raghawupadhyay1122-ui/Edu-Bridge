@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { PORT, CLIENT_ORIGIN } = require('./config/env');
 const connectDB = require('./config/db');
+const User = require('./models/User');
 
 const authRoutes = require('./routes/auth');
 const doubtRoutes = require('./routes/doubts');
@@ -12,7 +13,24 @@ const allowedOrigins = (CLIENT_ORIGIN || 'http://localhost:5173')
   .map((origin) => origin.trim())
   .filter(Boolean);
 
-connectDB();
+const ensureDemoAccounts = async () => {
+  const demoAccounts = [
+    { name: 'Student Demo', username: 'student', password: 'student123', role: 'student' },
+    { name: 'Faculty Demo', username: 'faculty', password: 'faculty123', role: 'faculty' },
+  ];
+
+  for (const account of demoAccounts) {
+    const existing = await User.findOne({ username: account.username.toLowerCase() });
+    if (!existing) {
+      await User.create({
+        ...account,
+        email: `${account.username}@demo.local`,
+      });
+    }
+  }
+};
+
+connectDB().then(ensureDemoAccounts).catch((err) => console.error(err));
 
 app.use(
   cors({

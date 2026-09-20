@@ -17,11 +17,11 @@ export function AuthProvider({ children }) {
     setUser(user);
   };
 
-  const login = async ({ email, password, role }) => {
+  const login = async ({ username, email, password, role }) => {
     setLoading(true);
     setError('');
     try {
-      const { data } = await api.post('/auth/login', { email, password, role });
+      const { data } = await api.post('/auth/login', { username, email, password, role });
       persist(data.token, data.user);
       return true;
     } catch (err) {
